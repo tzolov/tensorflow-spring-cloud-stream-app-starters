@@ -1,0 +1,22 @@
+//tag::ref-doc[]
+= TensorFlow Processor
+
+A processor that evaluates a machine learning model stored in TensorFlow Protobuf format.
+
+== Options
+
+The **$$pmml$$** $$processor$$ has the following options:
+
+//tag::configuration-properties[]
+$$tensorflow.header-output$$:: $$Mark if the computed output has to stored in the outbound message's header or in the payload.$$ *($$Boolean$$, default: `$$true$$`)*
+$$tensorflow.model-location$$:: $$The location of the Tensorflow model file.$$ *($$Resource$$, default: `$$<none>$$`)*
+$$tensorflow.output-index$$:: $$The model graph output index$$ *($$Integer$$, default: `$$0$$`)*
+$$tensorflow.output-name$$:: $$The model graph output name$$ *($$String$$, default: `$$output/Softmax$$`)*
+//end::configuration-properties[]
+
+//end::ref-doc[]
+== Build
+
+```
+$> mvn package
+```

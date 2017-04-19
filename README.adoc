@@ -1,0 +1,7 @@
+# TesnorFlow Processor
+
+To learn more about this application and the supported properties, please review the following details.
+
+include::spring-cloud-starter-stream-processor-tensorflow/README.adoc[]
+
+The TensorFlow processor uses link:https://www.tensorflow.org/api_docs/java/reference/org/tensorflow/package-summary[TensorFlow Java API] library.

@@ -6,7 +6,7 @@ It operationalizes the https://github.com/danielegrattarola/twitter-sentiment-cn
 
 image::src/test/resources/SCDF_TF_Sentiment.png[]
 
-video::https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]
+link:https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]
 == Options
 
 The **$$twitter-sentiment$$** $$processor$$ has the following options:

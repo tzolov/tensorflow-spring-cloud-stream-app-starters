@@ -4,6 +4,8 @@
 A processor that evaluates a machine learning model stored in TensorFlow Protobuf format.
 It operationalizes the https://github.com/danielegrattarola/twitter-sentiment-cnn
 
+image::src/test/resources/SCDF_TF_Sentiment.png[]
+
 == Options
 
 The **$$twitter-sentiment$$** $$processor$$ has the following options:

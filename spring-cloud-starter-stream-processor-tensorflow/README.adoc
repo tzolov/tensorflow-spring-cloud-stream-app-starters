@@ -3,6 +3,8 @@
 
 A processor that evaluates a machine learning model stored in TensorFlow Protobuf format.
 
+image::src/test/resources/TensorFlowProcessorArcutectureOverview.png[]
+
 The TensorFlow Processor uses a `TensorflowInputConverter` to convert the input data into data format compliant with the
 TensorFlow Model used. The input converter converts the input `Messagea into key/value `Map`, where
 the Key corresponds to a model input placeholder and the content is `org.tensorflow.DataType` compliant value.

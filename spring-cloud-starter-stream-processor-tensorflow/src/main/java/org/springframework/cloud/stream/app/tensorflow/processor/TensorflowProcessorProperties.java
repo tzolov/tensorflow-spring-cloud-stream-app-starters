@@ -48,6 +48,11 @@ public class TensorflowProcessorProperties {
 
 	/**
 	 * Mark if the computed output has to stored in the outbound message's header or in the payload.
+	 * Note: The Kafka binder requires you to withe list the custom headers. Therefore if you set the
+	 * saveOutputInHeader to true the you have to start the SCDF server with this property:
+	 * <code>
+	 *  --spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.headers=TF_OUTPUT,TF_INPUT
+	 * </code>
 	 */
 	private boolean saveOutputInHeader = false;
 

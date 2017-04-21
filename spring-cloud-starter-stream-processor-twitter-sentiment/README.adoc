@@ -6,7 +6,7 @@ It operationalizes the https://github.com/danielegrattarola/twitter-sentiment-cn
 
 == Options
 
-The **$$pmml$$** $$processor$$ has the following options:
+The **$$twitter-sentiment$$** $$processor$$ has the following options:
 
 //tag::configuration-properties[]
 $$tensorflow.model-location$$:: $$The location of the Tensorflow model file.$$ *($$Resource$$, default: `$$<none>$$`)*

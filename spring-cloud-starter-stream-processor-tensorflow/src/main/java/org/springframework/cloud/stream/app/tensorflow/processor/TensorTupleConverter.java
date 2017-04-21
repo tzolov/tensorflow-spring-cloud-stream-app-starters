@@ -25,6 +25,7 @@ import org.springframework.tuple.Tuple;
 import org.springframework.tuple.TupleBuilder;
 
 /**
+ * Utility that helps to covert {@link Tensor} to {@link Tuple} and in reverse.
  * @author Christian Tzolov
  */
 public class TensorTupleConverter {

@@ -51,6 +51,19 @@ import org.springframework.tuple.Tuple;
 /**
  * A processor that evaluates a machine learning model stored in TensorFlow's ProtoBuf format.
  *
+ * Processor uses a {@link TensorflowInputConverter} to convert the input data into data format compliant with the
+ * TensorFlow Model used. The input converter converts the input {@link Message} into key/value {@link Map}, where
+ * the Key corresponds to a model input placeholder and the content is {@link org.tensorflow.DataType} compliant value.
+ * The default converter implementation expects either Map payload or flat json message that can be converted int a Map.
+ *
+ * The {@link TensorflowInputConverter} can be extended and customized.
+ *
+ * Processor's output uses {@link TensorflowOutputConverter} to convert the computed {@link Tensor} result into a serializable
+ * message. The default implementation uses {@link Tuple} triple (see: {@link TensorflowOutputConverter}).
+ *
+ * Custom {@link TensorflowOutputConverter} can provide more convenient data representations.
+ * (see TwitterSentimentTensorflowOutputConverter.java
+ *
  * @author Christian Tzolov
  */
 @EnableBinding(Processor.class)
@@ -59,8 +72,24 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	private static final Log logger = LogFactory.getLog(TensorflowProcessorConfiguration.class);
 
+	/**
+	 * Note: The Kafka binder requires you to withe list the custom headers. Therefore if you set the
+	 * saveOutputInHeader to true the you have to start the SCDF server with this property:
+	 * <code>
+	 *  --spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.headers=TF_OUTPUT,TF_INPUT
+	 * </code>
+	 */
+
+	/**
+	 * Header name where the output is stored if the isSaveOutputInHeader is set
+	 */
 	public static final String TF_OUTPUT_HEADER = "TF_OUTPUT";
 
+	/**
+	 * Header name where the input is stored.
+	 * The default TensorflowInputConverter implementation will use TF_INPUT header if provided it over
+	 * the message payload.
+	 */
 	public static final String TF_INPUT_HEADER = "TF_INPUT";
 
 	@Autowired

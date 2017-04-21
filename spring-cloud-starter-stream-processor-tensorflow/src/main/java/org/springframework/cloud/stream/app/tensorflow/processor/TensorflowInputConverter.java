@@ -21,8 +21,23 @@ import java.util.Map;
 import org.springframework.messaging.Message;
 
 /**
+ * The {@link TensorflowInputConverter} is called by the TensorFlow Processor to convert the incoming {@link Message}s
+ * into a data type that matches the input of the TensorFlow model being used.
+ *
+ * The default implementation assumes that the received data has already been covered (before sent to the processor) and
+ * is encoded into key/value Map or flat key/value JSON message. Where each kek in the map corresponds to a model input
+ * placeholder and the value is compliant with TensorFlow's {@link org.tensorflow.DataType}.
+ *
+ *  @see <a href="http://bit.ly/2ox4IFG">TwitterSentimentTensorflowInputConverter.java</a> for how to build custom {@link TensorflowInputConverter}.
+ *
  * @author Christian Tzolov
  */
 public interface TensorflowInputConverter {
+	/**
+	 *
+	 * @param input Processor's input message
+	 * @param processorContext Context used to share information between the Input and Output converters
+	 * @return Returns map that corresponds to the TensorFlow model's input format.
+	 */
 	Map<String, Object> convert(Message<?> input, Map<String, Object> processorContext);
 }

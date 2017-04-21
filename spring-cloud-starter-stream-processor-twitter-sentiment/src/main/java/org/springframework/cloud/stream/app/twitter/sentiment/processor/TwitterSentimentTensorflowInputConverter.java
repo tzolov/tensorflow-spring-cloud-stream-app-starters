@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.stream.app.twitter.sentiment.processor;
 
+import static org.springframework.cloud.stream.app.twitter.sentiment.processor.TwitterSentimentProcessorConfiguration.PROCESSOR_CONTEXT_TWEET_JSON_MAP;
 import static org.springframework.util.StringUtils.isEmpty;
 
 import java.io.IOException;
@@ -34,11 +35,17 @@ import org.springframework.util.Assert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Converts the input Tweet JSON message into key/value map that corresponds to the Twitter Sentiment CNN model:
+ * <code>
+ *     data_in : vectorized TEXT tag
+ *     dropout_keep_prob: 1.0f
+ * </code>
+ * It also preservers the original Tweet (encoded as Java Map) in the processor context. Later is used by the
+ * output converter to compose the output json message.
+ *
  * @author Christian Tzolov
  */
-public class TwitterSentimentTensorflowInputConverter implements TensorflowInputConverter {
-
-	private static final Log logger = LogFactory.getLog(TwitterSentimentTensorflowInputConverter.class);
+public class TwitterSentimentTensorflowInputConverter implements TensorflowInputConverter, AutoCloseable {
 
 	public static final Float DROPOUT_KEEP_PROB_VALUE = new Float(1.0);
 
@@ -50,16 +57,18 @@ public class TwitterSentimentTensorflowInputConverter implements TensorflowInput
 
 	public static final String TWEET_ID_TAG = "id";
 
+	private static final Log logger = LogFactory.getLog(TwitterSentimentTensorflowInputConverter.class);
+
 	private final WordVocabulary wordVocabulary;
 
-	private final ObjectMapper jsonConverter;
+	private final ObjectMapper objectMapper;
 
 	public TwitterSentimentTensorflowInputConverter(Resource vocabularLocation) {
 		try (InputStream is = vocabularLocation.getInputStream()) {
 			wordVocabulary = new WordVocabulary(is);
-			jsonConverter = new ObjectMapper();
+			objectMapper = new ObjectMapper();
 			Assert.notNull(wordVocabulary, "Failed to initialize the word vocabulary");
-			Assert.notNull(jsonConverter, "Failed to initialize the jsonConverter");
+			Assert.notNull(objectMapper, "Failed to initialize the objectMapper");
 		}
 		catch (IOException e) {
 			throw new RuntimeException("Failed to initialize the Vocabulary", e);
@@ -69,14 +78,18 @@ public class TwitterSentimentTensorflowInputConverter implements TensorflowInput
 	}
 
 	@Override
-	public Map<String, Object> convert(Message<?> input) {
+	public Map<String, Object> convert(Message<?> input, Map<String, Object> processorContext) {
 
 		try {
 			Object payload = input.getPayload();
+
 			if (payload instanceof String) {
-				return getStringObjectMap(jsonConverter.readValue((String) payload, Map.class));
+				Map tweetJsonMap = objectMapper.readValue((String) payload, Map.class);
+				processorContext.put(PROCESSOR_CONTEXT_TWEET_JSON_MAP, tweetJsonMap);
+				return getStringObjectMap(tweetJsonMap);
 			}
 			else if (payload instanceof Map) {
+				processorContext.put(PROCESSOR_CONTEXT_TWEET_JSON_MAP, payload);
 				return getStringObjectMap((Map) payload);
 			}
 
@@ -107,5 +120,13 @@ public class TwitterSentimentTensorflowInputConverter implements TensorflowInput
 		response.put(DROPOUT_KEEP_PROB, DROPOUT_KEEP_PROB_VALUE);
 
 		return response;
+	}
+
+	@Override
+	public void close() throws Exception {
+		logger.info("Word Vocabulary destroyed");
+		if (wordVocabulary != null) {
+			wordVocabulary.close();
+		}
 	}
 }

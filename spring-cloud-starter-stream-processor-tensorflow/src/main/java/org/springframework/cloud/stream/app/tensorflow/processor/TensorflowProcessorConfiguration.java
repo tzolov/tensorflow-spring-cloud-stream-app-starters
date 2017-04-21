@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
@@ -40,13 +41,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.tuple.Tuple;
 
 /**
@@ -90,13 +89,15 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 	@ServiceActivator(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)
 	public Message<?> evaluate(Message<?> input) {
 
-		Map<String, Object> inputData = tensorflowInputConverter.convert(input);
+		Map<String, Object> processorContext = new ConcurrentHashMap<>();
+
+		Map<String, Object> inputData = tensorflowInputConverter.convert(input, processorContext);
 
 		Tensor outputTensor = this.evaluate(inputData, properties.getOutputName(), properties.getOutputIndex());
 
-		Object outputData = tensorflowOutputConverter.convert(outputTensor);
+		Object outputData = tensorflowOutputConverter.convert(outputTensor, processorContext);
 
-		if (properties.isHeaderOutput()) {
+		if (properties.isSaveOutputInHeader()) {
 			// Add the result to the message header
 			return MessageBuilder
 					.withPayload(input.getPayload())
@@ -144,9 +145,9 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 	@ConditionalOnMissingBean(name = "tensorflowOutputConverter")
 	public TensorflowOutputConverter tensorflowOutputConverter() {
 		// Default implementations serializes the Tensor into Tuple
-		return new TensorflowOutputConverter() {
+		return new TensorflowOutputConverter<Tuple>() {
 			@Override
-			public Tuple convert(Tensor tensor) {
+			public Tuple convert(Tensor tensor, Map<String, Object> processorContext) {
 				return TensorTupleConverter.toTuple(tensor);
 			}
 		};
@@ -158,7 +159,7 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 		return new TensorflowInputConverter() {
 
 			@Override
-			public Map<String, Object> convert(Message<?> input) {
+			public Map<String, Object> convert(Message<?> input, Map<String, Object> processorContext) {
 
 				if (input.getHeaders().containsKey(TF_INPUT_HEADER)) {
 					return (Map<String, Object>) input.getHeaders().get(TF_INPUT_HEADER, Map.class);

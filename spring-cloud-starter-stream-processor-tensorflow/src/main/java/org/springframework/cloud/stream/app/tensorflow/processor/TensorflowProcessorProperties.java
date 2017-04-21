@@ -39,7 +39,7 @@ public class TensorflowProcessorProperties {
 	/**
 	 * The model graph output name
 	 */
-	private String outputName = "output/Softmax";
+	private String outputName;
 
 	/**
 	 * The model graph output index
@@ -49,8 +49,9 @@ public class TensorflowProcessorProperties {
 	/**
 	 * Mark if the computed output has to stored in the outbound message's header or in the payload.
 	 */
-	private boolean headerOutput = true;
+	private boolean saveOutputInHeader = false;
 
+	@NotNull
 	public String getOutputName() {
 		return outputName;
 	}
@@ -76,11 +77,11 @@ public class TensorflowProcessorProperties {
 		this.outputIndex = outputIndex;
 	}
 
-	public boolean isHeaderOutput() {
-		return headerOutput;
+	public boolean isSaveOutputInHeader() {
+		return saveOutputInHeader;
 	}
 
-	public void setHeaderOutput(boolean headerOutput) {
-		this.headerOutput = headerOutput;
+	public void setSaveOutputInHeader(boolean saveOutputInHeader) {
+		this.saveOutputInHeader = saveOutputInHeader;
 	}
 }

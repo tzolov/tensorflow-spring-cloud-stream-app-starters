@@ -17,14 +17,15 @@
 package org.springframework.cloud.stream.app.tensorflow.processor;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.cloud.stream.app.tensorflow.processor.TensorflowProcessorProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,9 +34,17 @@ import org.springframework.context.annotation.Configuration;
  */
 public class TensorflowProcessorPropertiesTest {
 
+	private AnnotationConfigApplicationContext context;
+
+	@Before
+	public void beforeTest() {
+		context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "tensorflow.modelLocation:NONE");
+		EnvironmentTestUtils.addEnvironment(context, "tensorflow.outputName:NONE");
+	}
+
 	@Test
 	public void modelLocationCanBeCustomized() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, "tensorflow.modelLocation:/remote");
 		context.register(Conf.class);
 		context.refresh();
@@ -45,9 +54,6 @@ public class TensorflowProcessorPropertiesTest {
 
 	@Test
 	public void outputNameCanBeCustomized() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		//Compulsory property
-		EnvironmentTestUtils.addEnvironment(context, "tensorflow.modelLocation:/remote");
 		EnvironmentTestUtils.addEnvironment(context, "tensorflow.outputName:output1");
 		context.register(Conf.class);
 		context.refresh();
@@ -57,9 +63,6 @@ public class TensorflowProcessorPropertiesTest {
 
 	@Test
 	public void outputIndexCanBeCustomized() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		//Compulsory property
-		EnvironmentTestUtils.addEnvironment(context, "tensorflow.modelLocation:/remote");
 		EnvironmentTestUtils.addEnvironment(context, "tensorflow.outputIndex:666");
 		context.register(Conf.class);
 		context.refresh();
@@ -67,20 +70,19 @@ public class TensorflowProcessorPropertiesTest {
 		assertThat(properties.getOutputIndex(), equalTo(666));
 	}
 
-	@Test(expected = BeanCreationException.class)
-	public void missingModelLocation() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "tensorflow.outputIndex:666");
+	@Test
+	public void saveOutputInHeaderCanBeCustomized() {
+		EnvironmentTestUtils.addEnvironment(context, "tensorflow.saveOutputInHeader:false");
 		context.register(Conf.class);
 		context.refresh();
 		TensorflowProcessorProperties properties = context.getBean(TensorflowProcessorProperties.class);
-		assertThat(properties.getOutputIndex(), equalTo(666));
+		assertFalse(properties.isSaveOutputInHeader());
 	}
+
 
 	@Configuration
 	@EnableConfigurationProperties(TensorflowProcessorProperties.class)
 	static class Conf {
 
 	}
-
 }

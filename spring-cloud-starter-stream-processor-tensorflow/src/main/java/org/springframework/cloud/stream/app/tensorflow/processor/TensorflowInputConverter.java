@@ -24,5 +24,5 @@ import org.springframework.messaging.Message;
  * @author Christian Tzolov
  */
 public interface TensorflowInputConverter {
-	Map<String, Object> convert(Message<?> input);
+	Map<String, Object> convert(Message<?> input, Map<String, Object> processorContext);
 }

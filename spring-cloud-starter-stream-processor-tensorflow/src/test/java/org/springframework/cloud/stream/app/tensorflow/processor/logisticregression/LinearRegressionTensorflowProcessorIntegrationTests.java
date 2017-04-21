@@ -78,7 +78,7 @@ public abstract class LinearRegressionTensorflowProcessorIntegrationTests {
 	protected MessageCollector messageCollector;
 
 	@TestPropertySource(properties = {
-			"tensorflow.headerOutput=true"
+			"tensorflow.saveOutputInHeader=true"
 	})
 	public static class LinearRegressionInHeaderTests extends LinearRegressionTensorflowProcessorIntegrationTests {
 
@@ -100,7 +100,7 @@ public abstract class LinearRegressionTensorflowProcessorIntegrationTests {
 	}
 
 	@TestPropertySource(properties = {
-			"tensorflow.headerOutput=false"
+			"tensorflow.saveOutputInHeader=false"
 	})
 	public static class LinearRegressionInPayloadTests extends LinearRegressionTensorflowProcessorIntegrationTests {
 
@@ -125,9 +125,9 @@ public abstract class LinearRegressionTensorflowProcessorIntegrationTests {
 
 		@Bean
 		public TensorflowOutputConverter tensorflowOutputConverter() {
-			return new TensorflowOutputConverter() {
+			return new TensorflowOutputConverter<Object>() {
 				@Override
-				public Object convert(Tensor tensor) {
+				public Object convert(Tensor tensor, Map<String, Object> processorContext) {
 					float[] outputValue = new float[1];
 					tensor.copyTo(outputValue);
 					return outputValue[0];

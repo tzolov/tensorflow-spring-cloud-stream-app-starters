@@ -27,6 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WordVocabulary implements AutoCloseable {
 
+	/**
+	 *  This contains the word vocabulary used to train the TensorFlow model.
+	 */
 	private final ConcurrentHashMap<String, Integer> vocabulary;
 
 	public WordVocabulary(InputStream vocabularyInputStream) throws IOException {

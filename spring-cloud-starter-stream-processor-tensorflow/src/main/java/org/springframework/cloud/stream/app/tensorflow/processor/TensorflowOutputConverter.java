@@ -16,11 +16,13 @@
 
 package org.springframework.cloud.stream.app.tensorflow.processor;
 
+import java.util.Map;
+
 import org.tensorflow.Tensor;
 
 /**
  * @author Christian Tzolov
  */
 public interface TensorflowOutputConverter<T> {
-	T convert(Tensor tensor);
+	T convert(Tensor tensor, Map<String, Object> processorContext);
 }

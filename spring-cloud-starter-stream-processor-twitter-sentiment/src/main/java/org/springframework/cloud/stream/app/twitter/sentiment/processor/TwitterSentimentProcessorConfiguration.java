@@ -45,6 +45,8 @@ public class TwitterSentimentProcessorConfiguration {
 
 	private static final Log logger = LogFactory.getLog(TwitterSentimentProcessorConfiguration.class);
 
+	public static final String PROCESSOR_CONTEXT_TWEET_JSON_MAP = "tweetJsonMap";
+
 	@Autowired
 	private TwitterSentimentProcessorProperties properties;
 

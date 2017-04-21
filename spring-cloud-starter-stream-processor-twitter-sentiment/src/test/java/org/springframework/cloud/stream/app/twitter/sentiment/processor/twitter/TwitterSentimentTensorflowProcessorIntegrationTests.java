@@ -43,12 +43,11 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
+@SpringBootTest(
+		webEnvironment = SpringBootTest.WebEnvironment.NONE,
 		properties = {
-				//"tensorflow.modelLocation=classpath:tensorflow/minimal_graph.proto",
 				"tensorflow.modelLocation=http://dl.bintray.com/big-data/generic/minimal_graph.proto",
 				"tensorflow.outputName=output/Softmax",
-
 				"twitter.vocabularyLocation=http://dl.bintray.com/big-data/generic/vocab.csv"
 		})
 @DirtiesContext
@@ -60,12 +59,12 @@ public abstract class TwitterSentimentTensorflowProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector messageCollector;
 
-	@TestPropertySource(properties = {"tensorflow.headerOutput=true"})
+	@TestPropertySource(properties = {"tensorflow.saveOutputInHeader=true"})
 	public static class SimpleMappingTests extends TwitterSentimentTensorflowProcessorIntegrationTests {
 
 		@Test
 		public void testEvaluationPositive() {
-			String value = "{\"text\": \"RT @PostGradProblem: In preparation for the NFL lockout ...\"}";
+			String value = "{\"text\": \"RT @PostGradProblem: In preparation for the NFL lockout ...\", \"id\":666, \"lang\":\"en\" }";
 
 			Message<String> msg = MessageBuilder.withPayload(value).build();
 
@@ -75,15 +74,13 @@ public abstract class TwitterSentimentTensorflowProcessorIntegrationTests {
 
 			Assert.assertThat(received.getPayload(), equalTo(value));
 
-			System.out.println(">>> " + received.getHeaders().get(TensorflowProcessorConfiguration.TF_OUTPUT_HEADER).getClass());
-
 			Assert.assertThat(received.getHeaders().get(TensorflowProcessorConfiguration.TF_OUTPUT_HEADER).toString(),
-					equalTo("POSITIVE"));
+					equalTo("{\"sentiment\":\"POSITIVE\",\"text\":\"RT @PostGradProblem: In preparation for the NFL lockout ...\",\"id\":666,\"lang\":\"en\"}"));
 		}
 
 		@Test
 		public void testEvaluationNegative() {
-			String value = "{\"text\": \"This is really bad\"}";
+			String value = "{\"text\": \"This is really bad\", \"id\":\"666\", \"lang\":\"en\" }";
 
 			Message<String> msg = MessageBuilder.withPayload(value).build();
 
@@ -92,16 +89,16 @@ public abstract class TwitterSentimentTensorflowProcessorIntegrationTests {
 			Message<String> received = (Message<String>) messageCollector.forChannel(channels.output()).poll();
 			Assert.assertThat(received.getPayload(), equalTo(value));
 			Assert.assertThat(received.getHeaders().get(TensorflowProcessorConfiguration.TF_OUTPUT_HEADER).toString(),
-					equalTo("NEGATIVE"));
+					equalTo("{\"sentiment\":\"NEGATIVE\",\"text\":\"This is really bad\",\"id\":\"666\",\"lang\":\"en\"}"));
 		}
 	}
 
-	@TestPropertySource(properties = {"tensorflow.headerOutput=false"})
+	@TestPropertySource(properties = {"tensorflow.saveOutputInHeader=false"})
 	public static class SimpleMapping2Tests extends TwitterSentimentTensorflowProcessorIntegrationTests {
 
 		@Test
 		public void testEvaluationPositive() {
-			String value = "{\"text\": \"RT @PostGradProblem: In preparation for the NFL lockout ...\"}";
+			String value = "{\"text\": \"RT @PostGradProblem: In preparation for the NFL lockout ...\", \"id\":666, \"lang\":\"en\" }";
 
 			Message<String> msg = MessageBuilder.withPayload(value).build();
 
@@ -111,7 +108,8 @@ public abstract class TwitterSentimentTensorflowProcessorIntegrationTests {
 
 			Assert.assertTrue(received.getPayload().getClass().isAssignableFrom(String.class));
 
-			Assert.assertThat(received.getPayload().toString(), equalTo("POSITIVE"));
+			Assert.assertThat(received.getPayload().toString(),
+					equalTo("{\"sentiment\":\"POSITIVE\",\"text\":\"RT @PostGradProblem: In preparation for the NFL lockout ...\",\"id\":666,\"lang\":\"en\"}"));
 		}
 	}
 

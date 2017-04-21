@@ -4,4 +4,8 @@ To learn more about this application and the supported properties, please review
 
 include::spring-cloud-starter-stream-processor-tensorflow/README.adoc[]
 
+You can customize the processor input/output message converters to provide convenient handling of various message and model types.
+For example check the TwitterSentiment processor:
+include::spring-cloud-starter-stream-processor-twitter-sentiment/README.adoc[]
+
 The TensorFlow processor uses link:https://www.tensorflow.org/api_docs/java/reference/org/tensorflow/package-summary[TensorFlow Java API] library.

@@ -1,14 +1,19 @@
 # TesnorFlow Processor
 
+A processor that evaluates a machine learning models build with link:https://www.tensorflow.org/[TensorFlow] and stored
+in link:https://developers.google.com/protocol-buffers/[Protocol Buffer] binary format.
+
+The TensorFlow processor uses link:https://www.tensorflow.org/api_docs/java/reference/org/tensorflow/package-summary[TensorFlow Java API] library.
+
 To learn more about this application and the supported properties, please review the following details.
 
 include::spring-cloud-starter-stream-processor-tensorflow/README.adoc[]
 
-You can customize the processor input/output message converters to provide convenient handling of various message and model types.
-For example check the TwitterSentiment processor:
+To customize Processor's input/output converters for handling different message formats and model types review
+ the TwitterSentiment processor extension.
 
 include::spring-cloud-starter-stream-processor-twitter-sentiment/README.adoc[]
 
-The TensorFlow processor uses link:https://www.tensorflow.org/api_docs/java/reference/org/tensorflow/package-summary[TensorFlow Java API] library.
-
-link:https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]
+---
+image::tensorflow-app-starters-test-support/src/main/resources/doc/VideoIcon.png[]
+Video Tutorial: link:https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]

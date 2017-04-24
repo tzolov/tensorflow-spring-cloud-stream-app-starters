@@ -16,25 +16,12 @@
 
 package org.springframework.cloud.stream.app.tensorflow.processor;
 
-import static org.apache.commons.io.IOUtils.buffer;
-import static org.apache.commons.io.IOUtils.toByteArray;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.tensorflow.Graph;
-import org.tensorflow.Session;
-import org.tensorflow.Session.Runner;
 import org.tensorflow.Tensor;
-import org.xml.sax.SAXException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -68,6 +56,7 @@ import org.springframework.tuple.Tuple;
  */
 @EnableBinding(Processor.class)
 @EnableConfigurationProperties(TensorflowProcessorProperties.class)
+@Import(TensorFlowService.class)
 public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	private static final Log logger = LogFactory.getLog(TensorflowProcessorConfiguration.class);
@@ -103,17 +92,18 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 	@Qualifier("tensorflowOutputConverter")
 	private TensorflowOutputConverter tensorflowOutputConverter;
 
-	private Graph graph;
+	@Autowired
+	private TensorFlowService tensorFlowService;
 
-	@PostConstruct
-	public void setUp() throws IOException, SAXException, JAXBException {
-		try (InputStream is = properties.getModelLocation().getInputStream()) {
-			graph = new Graph();
-			logger.info("Loading TensorFlow graph model (" + properties.getModelLocation() + ") ... ");
-			graph.importGraphDef(toByteArray(buffer(is)));
-			logger.info("TensorFlow graph ready to serve.");
-		}
-	}
+//	@PostConstruct
+//	public void setUp() throws IOException, SAXException, JAXBException {
+//		try (InputStream is = properties.getModelLocation().getInputStream()) {
+//			graph = new Graph();
+//			logger.info("Loading TensorFlow graph model (" + properties.getModelLocation() + ") ... ");
+//			graph.importGraphDef(toByteArray(buffer(is)));
+//			logger.info("TensorFlow graph ready to serve.");
+//		}
+//	}
 
 	@ServiceActivator(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)
 	public Message<?> evaluate(Message<?> input) {
@@ -122,7 +112,8 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 		Map<String, Object> inputData = tensorflowInputConverter.convert(input, processorContext);
 
-		Tensor outputTensor = this.evaluate(inputData, properties.getOutputName(), properties.getOutputIndex());
+		Tensor outputTensor = tensorFlowService.evaluate(
+				inputData, properties.getOutputName(), properties.getOutputIndex());
 
 		Object outputData = tensorflowOutputConverter.convert(outputTensor, processorContext);
 
@@ -144,31 +135,12 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 		return outputMessage;
 	}
 
-	private Tensor evaluate(Map<String, Object> feeds, String outputName, int outputIndex) {
-
-		try (Session session = new Session(graph)) {
-			Runner runner = session.runner();
-			Tensor[] feedTensors = new Tensor[feeds.size()];
-			try {
-				int i = 0;
-				for (Entry<String, Object> e : feeds.entrySet()) {
-					Tensor tensor = Tensor.create(e.getValue());
-					runner = runner.feed(e.getKey(), tensor);
-					feedTensors[i++] = tensor;
-				}
-				return runner.fetch(outputName).run().get(outputIndex);
-			}
-			finally {
-				if (feedTensors != null) {
-					for (Tensor tensor : feedTensors) {
-						if (tensor != null) {
-							tensor.close();
-						}
-					}
-				}
-			}
-		}
-	}
+//	@Bean
+//	@RefreshScope
+//	public TensorFlowService tensorFlowService() throws IOException {
+//		logger.info(">>>>> CREATE NEW TensorFlowService for model" + properties.getModelLocation());
+//		return new TensorFlowService(properties.getModelLocation());
+//	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "tensorflowOutputConverter")
@@ -204,6 +176,6 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		graph.close();
+		tensorFlowService.close();
 	}
 }

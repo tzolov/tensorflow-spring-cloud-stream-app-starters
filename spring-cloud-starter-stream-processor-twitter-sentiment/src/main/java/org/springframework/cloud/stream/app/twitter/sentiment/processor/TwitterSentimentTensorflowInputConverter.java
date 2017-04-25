@@ -124,7 +124,7 @@ public class TwitterSentimentTensorflowInputConverter implements TensorflowInput
 
 	@Override
 	public void close() throws Exception {
-		logger.info("Word Vocabulary destroyed");
+		logger.info("Word Vocabulary Destroyed");
 		if (wordVocabulary != null) {
 			wordVocabulary.close();
 		}

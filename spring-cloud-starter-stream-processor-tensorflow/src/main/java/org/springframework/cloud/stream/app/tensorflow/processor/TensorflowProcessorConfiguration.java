@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.stream.app.tensorflow.processor;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +32,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -57,10 +57,14 @@ import org.springframework.tuple.Tuple;
  */
 @EnableBinding(Processor.class)
 @EnableConfigurationProperties(TensorflowProcessorProperties.class)
-@Import(TensorFlowService.class)
 public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	private static final Log logger = LogFactory.getLog(TensorflowProcessorConfiguration.class);
+
+	/**
+	 * Header name where the output is stored if the isSaveOutputInHeader is set
+	 */
+	public static final String TF_OUTPUT_HEADER = "TF_OUTPUT";
 
 	/**
 	 * Note: The Kafka binder requires you to withe list the custom headers. Therefore if you set the
@@ -71,16 +75,12 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 	 */
 
 	/**
-	 * Header name where the output is stored if the isSaveOutputInHeader is set
-	 */
-	public static final String TF_OUTPUT_HEADER = "TF_OUTPUT";
-
-	/**
 	 * Header name where the input is stored.
 	 * The default TensorflowInputConverter implementation will use TF_INPUT header if provided it over
 	 * the message payload.
 	 */
 	public static final String TF_INPUT_HEADER = "TF_INPUT";
+
 
 	@Autowired
 	private TensorflowProcessorProperties properties;
@@ -126,12 +126,11 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 		return outputMessage;
 	}
 
-//	@Bean
-//	@RefreshScope
-//	public TensorFlowService tensorFlowService() throws IOException {
-//		logger.info(">>>>> CREATE NEW TensorFlowService for model" + properties.getModelLocation());
-//		return new TensorFlowService(properties.getModelLocation());
-//	}
+	@Bean
+	@RefreshScope
+	public TensorFlowService tensorFlowService() throws IOException {
+		return new TensorFlowService(properties.getModelLocation());
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "tensorflowOutputConverter")
@@ -167,6 +166,7 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
+		logger.info("Close TensorflowProcessorConfiguration");
 		tensorFlowService.close();
 	}
 }

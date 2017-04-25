@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.app.tensorflow.processor.TensorflowInputConverter;
 import org.springframework.cloud.stream.app.tensorflow.processor.TensorflowOutputConverter;
@@ -57,6 +58,7 @@ public class TwitterSentimentProcessorConfiguration {
 	}
 
 	@Bean
+	@RefreshScope
 	public TensorflowInputConverter tensorflowInputConverter() throws MalformedURLException {
 		logger.info("Load vocabulary: " + properties.getVocabularyLocation());
 		return new TwitterSentimentTensorflowInputConverter(properties.getVocabularyLocation());

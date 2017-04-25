@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
@@ -94,16 +95,6 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 
 	@Autowired
 	private TensorFlowService tensorFlowService;
-
-//	@PostConstruct
-//	public void setUp() throws IOException, SAXException, JAXBException {
-//		try (InputStream is = properties.getModelLocation().getInputStream()) {
-//			graph = new Graph();
-//			logger.info("Loading TensorFlow graph model (" + properties.getModelLocation() + ") ... ");
-//			graph.importGraphDef(toByteArray(buffer(is)));
-//			logger.info("TensorFlow graph ready to serve.");
-//		}
-//	}
 
 	@ServiceActivator(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)
 	public Message<?> evaluate(Message<?> input) {

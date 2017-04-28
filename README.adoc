@@ -14,6 +14,7 @@ To customize Processor's input/output converters for handling different message 
 
 include::spring-cloud-starter-stream-processor-twitter-sentiment/README.adoc[]
 
+
 ---
 image::tensorflow-app-starters-test-support/src/main/resources/doc/VideoIcon.png[]
 Video Tutorial: link:https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]

@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.tensorflow</groupId>
-			<artifactId>tensorFlow</artifactId>
+			<artifactId>tensorflow</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

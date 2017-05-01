@@ -10,11 +10,18 @@ To learn more about this application and the supported properties, please review
 include::spring-cloud-starter-stream-processor-tensorflow/README.adoc[]
 
 To customize Processor's input/output converters for handling different message formats and model types review
- the TwitterSentiment processor extension.
+ the Twitter Sentiment processor extension.
 
 include::spring-cloud-starter-stream-processor-twitter-sentiment/README.adoc[]
 
+Label Image is a customized Processor that extends the core Tensorflow Processor to support the Inception Tensorflow model:
+
+
+include::spring-cloud-starter-stream-processor-label-image/README.adoc[]
 
 ---
-image::tensorflow-app-starters-test-support/src/main/resources/doc/VideoIcon.png[]
+
 Video Tutorial: link:https://www.youtube.com/watch?v=QzF2Iii4s5c[Real-time Twitter Sentiment Analytics with TensorFlow and Spring Cloud Dataflow]
+
+image::tensorflow-app-starters-test-support/src/main/resources/doc/VideoIcon.png[]
+

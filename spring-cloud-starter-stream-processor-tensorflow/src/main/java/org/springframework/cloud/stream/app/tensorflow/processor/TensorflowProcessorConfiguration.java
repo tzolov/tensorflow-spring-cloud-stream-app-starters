@@ -158,6 +158,7 @@ public class TensorflowProcessorConfiguration implements AutoCloseable {
 				else if (input.getPayload() instanceof Map) {
 					return (Map<String, Object>) input.getPayload();
 				}
+
 				throw new RuntimeException("Unsupported input format: " + input);
 
 			}

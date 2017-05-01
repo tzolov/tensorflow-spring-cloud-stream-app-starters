@@ -1,0 +1,53 @@
+//tag::ref-doc[]
+= Image Labeling Processor
+
+A processor for real-time inference of pre-trained Inception TensorFlow model
+(https://github.com/tensorflow/models/tree/master/inception) that classifies JPEG images into
+1 of 1000 categories.
+
+Result is JSON message in the format:
+
+```json
+{
+  "label" : "<infered image label>"
+}
+```
+
+If the `alternatives-length` is set to value K (where K > 0) the result will include an `alternatives` tag
+containing top K probable labels. For example for  `alternatives-length=3`
+
+```json
+{
+  "alternatives": [
+    {"giant panda":0.98649305},
+    {"badger":0.010562794},
+    {"ice bear":0.001130851}
+  ],
+  "label" : "giant panda"
+}
+```
+
+== Options
+
+The **$$twitter-sentiment$$** $$processor$$ has the following options:
+
+//tag::configuration-properties[]
+$$inception.alternatives-length$$:: $$Number of top K alternatives to add to the result. Only used when the alternativesLength > 0.$$ *($$Integer$$, default: `$$-1$$`)*
+$$inception.labels-location$$:: $$<documentation missing>$$ *($$Resource$$, default: `$$<none>$$`)*
+$$tensorflow.model-location$$:: $$The location of the Tensorflow model file.$$ *($$Resource$$, default: `$$<none>$$`)*
+$$tensorflow.output-index$$:: $$The model graph output index$$ *($$Integer$$, default: `$$0$$`)*
+$$tensorflow.output-name$$:: $$The model graph output name$$ *($$String$$, default: `$$<none>$$`)*
+$$tensorflow.save-output-in-header$$:: $$Mark if the computed output has to stored in the outbound message's header or in the payload.
+ Note: The Kafka binder requires you to withe list the custom headers. Therefore if you set the
+ saveOutputInHeader to true the you have to start the SCDF server with this property:
+ <code>
+  --spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.headers=TF_OUTPUT,TF_INPUT
+ </code>$$ *($$Boolean$$, default: `$$false$$`)*
+//end::configuration-properties[]
+
+//end::ref-doc[]
+== Build
+
+```
+$> mvn package
+```

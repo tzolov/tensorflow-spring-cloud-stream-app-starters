@@ -27,7 +27,7 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author Christian Tzolov
  */
-@ConfigurationProperties("twitter")
+@ConfigurationProperties("inception")
 @Validated
 public class TwitterSentimentProcessorProperties {
 

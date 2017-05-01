@@ -48,7 +48,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 		properties = {
 				"tensorflow.modelLocation=http://dl.bintray.com/big-data/generic/minimal_graph.proto",
 				"tensorflow.outputName=output/Softmax",
-				"twitter.vocabularyLocation=http://dl.bintray.com/big-data/generic/vocab.csv"
+				"inception.vocabularyLocation=http://dl.bintray.com/big-data/generic/vocab.csv"
 		})
 @DirtiesContext
 public abstract class TwitterSentimentTensorflowProcessorIntegrationTests {

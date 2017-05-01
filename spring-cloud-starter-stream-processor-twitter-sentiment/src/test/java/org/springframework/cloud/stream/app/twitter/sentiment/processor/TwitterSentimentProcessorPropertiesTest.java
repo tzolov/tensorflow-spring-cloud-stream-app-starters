@@ -35,7 +35,7 @@ public class TwitterSentimentProcessorPropertiesTest {
 	@Test
 	public void vocabularyLocationCanBeCustomized() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "twitter.vocabularyLocation:/remote");
+		EnvironmentTestUtils.addEnvironment(context, "inception.vocabularyLocation:/remote");
 		context.register(Conf.class);
 		context.refresh();
 		TwitterSentimentProcessorProperties properties = context.getBean(TwitterSentimentProcessorProperties.class);

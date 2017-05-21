@@ -1,3 +1,5 @@
+# !!! This repository is deprecated as most of the work done here is already part of the official Spring Cloud DataFlow Tensorflow Application: https://github.com/tzolov/tensorflow !!!
+
 # Spring Cloud Stream TensorFlow Processor
 
 A processor that evaluates a machine learning models build with link:https://www.tensorflow.org/[TensorFlow] and stored

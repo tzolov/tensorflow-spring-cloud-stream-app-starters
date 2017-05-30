@@ -1,4 +1,4 @@
-# !!! This repository is deprecated as most of the work done here is already part of the official Spring Cloud DataFlow Tensorflow Application: https://github.com/tzolov/tensorflow !!!
+# !!! This repository is deprecated as most of the work done here is already part of the official Spring Cloud DataFlow Tensorflow Application: https://github.com/spring-cloud-stream-app-starters/tensorflow !!!
 
 # Spring Cloud Stream TensorFlow Processor
 
